@@ -332,7 +332,7 @@ form input {
 
 form button {
   margin-top: 50px;
-  margin-bottom: 30px;
+  margin-bottom: 28px;
   background-color: #1d6154;
   color: #ffffff;
   width: 179px;
@@ -355,4 +355,12 @@ form button:hover {
 .forgottenPassword:hover {
   font-weight: 900;
   cursor: pointer;
+}
+
+.errorMessage{
+	color: red;
+	font-weight: 500;
+	margin-top: 5px;
+	text-align: center;
+	font-style: italic;
 }
