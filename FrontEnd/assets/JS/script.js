@@ -122,51 +122,53 @@ async function createFilters() {
   });
 }
 
-// Mode édition lorsque le token est actif
-const token = localStorage.getItem("token");
-if (token) {
-  // Fonction responsable de l'affichage du "mode édition"
-  function editMode() {
-    const editModeDiv = document.getElementById("editMode");
-    editModeDiv.style.display = "flex";
-    editModeDiv.classList.add("editorBar");
+/// Mode édition ///
+
+// Fonction responsable de l'affichage du "mode édition"
+function editMode() {
+  const editModeDiv = document.getElementById("editMode");
+  editModeDiv.style.display = "flex";
+  editModeDiv.classList.add("editorBar");
+  const editorIcon = document.createElement("i");
+  editorIcon.classList.add("fa-regular", "fa-pen-to-square");
+  editModeDiv.appendChild(editorIcon);
+
+  //Affichage du bouton "publier les changements"
+  const publishBtn = document.createElement("div");
+  publishBtn.classList.add("publishBtn");
+  editModeDiv.appendChild(publishBtn);
+  const publishText = document.createElement("p");
+  publishText.innerText = "publier les changements";
+  publishText.classList.add("publishText");
+  publishBtn.appendChild(publishText);
+
+  //Affichage des deux boutons "modifier"
+  const modifyBtnIntro = document.querySelector(".pictureIntro");
+  insertBtnModify(modifyBtnIntro, "13px 0 0 55px");
+  const modifyBtnProjects = document.querySelector(".projectsTitle");
+  insertBtnModify(modifyBtnProjects, "10px 0");
+
+  function insertBtnModify(targetSection, marginValue) {
+    const modifyBtn = document.createElement("div");
+    modifyBtn.classList.add("buttonModify");
+
     const editorIcon = document.createElement("i");
     editorIcon.classList.add("fa-regular", "fa-pen-to-square");
-    editModeDiv.appendChild(editorIcon);
+    modifyBtn.appendChild(editorIcon);
 
-    //Affichage du bouton "publier les changements"
-    const publishBtn = document.createElement("div");
-    publishBtn.classList.add("publishBtn");
-    editModeDiv.appendChild(publishBtn);
-    const publishText = document.createElement("p");
-    publishText.innerText = "publier les changements";
-    publishText.classList.add("publishText");
-    publishBtn.appendChild(publishText);
+    const modifyBtnText = document.createElement("p");
+    modifyBtnText.innerText = "modifier";
+    modifyBtn.appendChild(modifyBtnText);
 
-    //Affichage des deux boutons "modifier"
-    const modifyBtnIntro = document.querySelector(".pictureIntro");
-    insertBtnModify(modifyBtnIntro, "13px 0 0 55px");
-    const modifyBtnProjects = document.querySelector(".projectsTitle");
-    insertBtnModify(modifyBtnProjects, "10px 0");
+    modifyBtn.style.margin = marginValue;
 
-    function insertBtnModify(targetSection, marginValue) {
-      const modifyBtn = document.createElement("div");
-      modifyBtn.classList.add("buttonModify");
-
-      const editorIcon = document.createElement("i");
-      editorIcon.classList.add("fa-regular", "fa-pen-to-square");
-      modifyBtn.appendChild(editorIcon);
-
-      const modifyBtnText = document.createElement("p");
-      modifyBtnText.innerText = "modifier";
-      modifyBtn.appendChild(modifyBtnText);
-
-      modifyBtn.style.margin = marginValue;
-
-      targetSection.appendChild(modifyBtn);
-    }
+    targetSection.appendChild(modifyBtn);
   }
+}
 
+const token = localStorage.getItem("token");
+if (token) {
+  // On appelle la fonction permettant l'affichage du mode édition
   editMode();
 
   // On crée le logout pour donner la possibilité de se déconnecter
