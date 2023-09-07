@@ -210,72 +210,61 @@ nav li a:hover {
   margin-bottom: 1em;
 }
 
-.editorBar{
-	display: flex;
-	width: 100vw;
-	height: 59px;
-	position: fixed;
-	top: 0;
-	z-index: 3;
-	background-color: #000000;
-	position: relative;
-	left: 50%;
-	transform: translateX(-50%);
-	justify-content: center;
-	align-items: center;
-	gap: 21px;
+.editorBar {
+  display: flex;
+  width: 100vw;
+  height: 59px;
+  position: fixed;
+  top: 0;
+  z-index: 3;
+  background-color: #000000;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  justify-content: center;
+  align-items: center;
+  gap: 21px;
 }
 
-.publishBtn{
-	background-color:#FFFFFF;
-	width: 216px;
-	height: 38px;
-	border-radius: 60px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	font-weight: 500;
+.publishBtn {
+  background-color: #ffffff;
+  width: 216px;
+  height: 38px;
+  border-radius: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500;
 }
 
-.publishText{
+.publishText {
   color: #000000;
   z-index: 4;
 }
 
-#modifyBtn{
+#modifyBtn {
   display: none;
 }
 
-.pictureIntro{
-	display: block;
+.pictureIntro {
+  display: block;
 }
 
-.buttonModify{
-	display: flex;
-	gap: 8px;
+.buttonModify {
+  display: flex;
+  gap: 8px;
 }
-.buttonModify:hover{
-	color: #B1663C;
-	cursor: default;
-}
-
-#buttonModify-0{
-	margin-top: 13px;
-	margin-left: 55px;
+.buttonModify:hover {
+  color: #b1663c;
+  cursor: default;
 }
 
-#buttonModify-1{
-	margin-top: 10px;
-	
+.projectsTitle {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  gap: 31px;
 }
-
-.projectsTitle{
-	display: flex;
-	justify-content: center;
-	align-content: center;
-	gap: 31px;	
-}
-
 
 .filters {
   display: flex;
@@ -429,19 +418,18 @@ form button:hover {
   cursor: pointer;
 }
 
-.errorMessage{
-	color: red;
-	font-weight: 500;
-	margin-top: 5px;
-	text-align: center;
-	font-style: italic;
+.errorMessage {
+  color: red;
+  font-weight: 500;
+  margin-top: 5px;
+  text-align: center;
+  font-style: italic;
 }
 
-#editMode{
+#editMode {
   display: none;
-	color: #FFFFFF;
-	justify-content: center;
-	align-content: center;
-	gap: 7px;
+  color: #ffffff;
+  justify-content: center;
+  align-content: center;
+  gap: 7px;
 }
-
