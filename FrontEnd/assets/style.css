@@ -174,7 +174,12 @@ nav li {
   font-size: 1.2em;
 }
 
-li:hover {
+nav li a {
+  color: inherit;
+  text-decoration: none;
+}
+
+nav li a:hover {
   color: #b1663c;
 }
 #introduction {
@@ -204,6 +209,73 @@ li:hover {
   text-align: center;
   margin-bottom: 1em;
 }
+
+.editorBar{
+	display: flex;
+	width: 100vw;
+	height: 59px;
+	position: fixed;
+	top: 0;
+	z-index: 3;
+	background-color: #000000;
+	position: relative;
+	left: 50%;
+	transform: translateX(-50%);
+	justify-content: center;
+	align-items: center;
+	gap: 21px;
+}
+
+.publishBtn{
+	background-color:#FFFFFF;
+	width: 216px;
+	height: 38px;
+	border-radius: 60px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-weight: 500;
+}
+
+.publishText{
+  color: #000000;
+  z-index: 4;
+}
+
+#modifyBtn{
+  display: none;
+}
+
+.pictureIntro{
+	display: block;
+}
+
+.buttonModify{
+	display: flex;
+	gap: 8px;
+}
+.buttonModify:hover{
+	color: #B1663C;
+	cursor: default;
+}
+
+#buttonModify-0{
+	margin-top: 13px;
+	margin-left: 55px;
+}
+
+#buttonModify-1{
+	margin-top: 10px;
+	
+}
+
+.projectsTitle{
+	display: flex;
+	justify-content: center;
+	align-content: center;
+	gap: 31px;	
+}
+
 
 .filters {
   display: flex;
@@ -364,3 +436,12 @@ form button:hover {
 	text-align: center;
 	font-style: italic;
 }
+
+#editMode{
+  display: none;
+	color: #FFFFFF;
+	justify-content: center;
+	align-content: center;
+	gap: 7px;
+}
+

@@ -23,6 +23,7 @@ document.querySelector(".form").addEventListener("submit", function (event) {
 
     // Traitement du token d'authentification et gestion des messages d'erreur
     .then((data) => {
+      console.log(data);
       const token = data.token;
       const wrongEmail = document.querySelector(".wrongEmail");
       const wrongPassword = document.querySelector(".wrongPassword");
@@ -30,9 +31,6 @@ document.querySelector(".form").addEventListener("submit", function (event) {
         wrongEmail.querySelector(".errorMessage");
       const existingWrongPasswordMessage =
         wrongPassword.querySelector(".errorMessage");
-
-      // On stock localement le token pour une utilisation ultérieure
-      localStorage.setItem("token", token);
 
       // On affiche un message d'erreur spécifique si l'email n'est pas validé par le serveur
       if (data.message) {
@@ -60,6 +58,8 @@ document.querySelector(".form").addEventListener("submit", function (event) {
             wrongPassword.appendChild(invalidPassword);
           }
         } else {
+          // On stock localement le token pour une utilisation ultérieure
+          window.localStorage.setItem("token", token);
           // Redirection vers la page d'accueil si la connexion est confirmée
           window.location.href = "index.html";
         }

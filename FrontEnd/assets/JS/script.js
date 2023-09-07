@@ -25,11 +25,10 @@ function showWorks(data) {
     figureElement.appendChild(figureImg);
     figureElement.appendChild(figureCaption);
   });
-  }
+}
 
 // On appelle la fonction qui récupère les travaux
 getWorksDatas();
-
 
 //// FILTRES ////
 
@@ -125,3 +124,56 @@ async function createFilters() {
 
 // On appelle la fonction pour initialiser la création des filtres de catégories dans la galerie de travaux
 createFilters();
+
+// Mode édition lorsque le token est actif
+const token = localStorage.getItem("token");
+if (token) {
+  // Affichage du "mode édition" et de l'icône
+  const editModeDiv = document.getElementById("editMode");
+  editModeDiv.style.display = "flex";
+  editModeDiv.classList.add("editorBar");
+  const editorIcon = document.createElement("i");
+  editorIcon.classList.add("fa-regular", "fa-pen-to-square");
+  editModeDiv.appendChild(editorIcon);
+
+  //Affichage du bouton "publier les changements"
+  const publishBtn = document.createElement("div");
+  publishBtn.classList.add("publishBtn");
+  editModeDiv.appendChild(publishBtn);
+  const publishText = document.createElement("p");
+  publishText.innerText = "publier les changements";
+  publishText.classList.add("publishText");
+  publishBtn.appendChild(publishText);
+
+  //Affichage des deux boutons "modifier"
+  const modifyBtnIntro = document.querySelector(".pictureIntro");
+  insertBtnModify(modifyBtnIntro, "13px 0 0 55px");
+  const modifyBtnProjects = document.querySelector(".projectsTitle");
+  insertBtnModify(modifyBtnProjects, "10px 0");
+
+  function insertBtnModify(targetSection, marginValue) {
+    const modifyBtn = document.createElement("div");
+    modifyBtn.classList.add("buttonModify");
+
+    const editorIcon = document.createElement("i");
+    editorIcon.classList.add("fa-regular", "fa-pen-to-square");
+    modifyBtn.appendChild(editorIcon);
+
+    const modifyBtnText = document.createElement("p");
+    modifyBtnText.innerText = "modifier";
+    modifyBtn.appendChild(modifyBtnText);
+
+    modifyBtn.style.margin = marginValue;
+
+    targetSection.appendChild(modifyBtn);
+  }
+
+  // On crée le logout pour donner la possibilité de se déconnecter
+  const loginBtn = document.getElementById("loginBtn");
+  loginBtn.innerText = "logout";
+  loginBtn.addEventListener("click", function (event) {
+    event.preventDefault();
+    localStorage.removeItem("token");
+    window.location.href = "index.html";
+  });
+}
