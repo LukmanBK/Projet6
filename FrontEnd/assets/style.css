@@ -433,3 +433,327 @@ form button:hover {
   align-content: center;
   gap: 7px;
 }
+
+/***** MODAL ******/
+
+.modal{
+	display: none;
+}
+.modal-background{
+	position: fixed;
+	z-index: 1;
+	left:0;
+	top: 0;
+	height: 100%;
+	width: 100%;
+	overflow: auto;
+	background:#000000;
+	opacity: 0.5;
+	animation-name: backgroundOpen;
+	animation-duration: 1s;
+}
+
+.modal-window{
+	background-color: #FFFFFF;
+	opacity: 1;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 630px;
+	height: 730px;
+	border-radius: 10px;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.closeBtn{
+	align-self: flex-end;
+	margin-right: 30px;
+	margin-top:20px;
+	font-size: 20px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.closeBtn:hover{
+	scale: 1.5;
+}
+
+.modal-window h3{
+	font-size: 26px;
+	font-weight: 400;
+  margin-bottom: 36px;
+}
+
+.modal-gallery{
+	width: 450px;
+	max-height: 53%;
+	height: 53%;
+	margin-top: 47px;
+	margin-bottom: 47px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	overflow: auto;
+}
+
+.modal-window hr{
+	border: none;
+	color: #B3B3B3;
+	width: 430px;
+	height: 0px;
+	border: 1px solid #B3B3B3;
+}
+
+.addPhotoButton{
+	width:237px;
+	height: 36px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color:#1D6154;
+	border-radius: 60px;
+	margin-top: 38px;
+	margin-bottom: 23px;
+}
+
+.addPhotoButton:hover{
+	filter: brightness(1.05);
+	box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.5);
+	cursor: default;
+}
+
+.addPhotoButton p{
+	color: white;
+	font-weight: 700;
+	line-height: 36px;
+	font-family: syne;
+}
+
+.figureForModal {
+	position: relative;
+
+}
+
+.imgForModal{
+	max-width: 78px;
+	max-height: 104px
+
+}
+
+.figCaptionForModal{
+	font-size: 12px;
+}
+.figureContainer{
+	width: 17px;
+	height: 17px;
+	background-color: #000000;
+	position: absolute;
+}
+.trashContainer{
+	top: 8px;
+	right: 5px;
+}
+
+.figureContainer i{
+	color:#FFFFFF;
+	position: absolute;
+	top: 3px;
+	right:3.5px;
+	font-size: 11px;
+	background-color: black;
+	color: white;
+}
+
+.figureContainer:hover,
+.figureContainer:hover * {
+	transform: scale(1.2);
+  cursor: pointer;
+}
+
+
+
+/* SecondModal */
+
+.iconBar{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  }
+  
+  .fa-arrow-left {
+    margin-left: 30px;
+    margin-top:20px;
+    font-size: 20px;
+    font-weight: 600;
+    cursor: default;
+  }
+  
+  .fa-arrow-left:hover{
+    scale: 1.5;
+  }
+  
+  
+  
+  .addPhotoForm{
+    margin-top: 36px;
+  }
+  
+  .uploadPhotoContainer{
+    width:420px;
+    height:169px;
+    background-color: #E8F1F7;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    /* bottom: 120px; */
+  }
+  
+  .fa-image{
+    font-size: 46px;
+    transform: scaleX(1.2);
+    color: #E8F1F7;
+    -webkit-text-stroke:2px;
+    -webkit-text-stroke-color: #B9C5CC; 
+    position: absolute;
+    top:28px;
+  }
+  
+  .uploadPhotoButtoncontainer{
+    width:173px;
+    height:36px;
+    background-color: #CBD6DC;
+    border-radius: 50px;
+    position:relative;
+    display: inline-block;
+    top:21px
+  }
+  
+  .uploadPhotoButtoncontainer:hover{
+    filter: brightness(0.9);
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
+    cursor: default;
+  }
+  
+  .uploadPhotoButton{
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: default;
+    overflow: hidden;
+  }
+  
+  .uploadPhotoButtonText{
+    color: #306685;
+    text-align: center;
+    cursor: default;
+    position:absolute;
+    top:10px;
+    left:33px;
+  }
+  
+  .uploadPhotodescription{
+    display: block;
+    font-size: 10px;
+    position: absolute;
+    bottom: 19px;
+  }
+  
+  .photoPreviewImg{
+    max-height: 169px;
+    max-width: 420px;
+    object-fit: cover;
+    z-index: 4;
+  }
+  
+  .invalidFile{
+    z-index: 5;
+    color: red;
+    font-style: italic;
+  }
+  
+  .titleLabel{
+    display: block;
+    text-align: left;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    align-self: flex-start;
+  }
+  
+  .nameInput{
+    display: block;
+    width:404px;
+    height:51px;
+    border: none;
+    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+    outline: none;
+    padding-left:16px
+  }
+  
+  .categoryLabel{
+    display: block;
+    text-align: left;
+    margin-top: 21px;
+    margin-bottom: 10px;
+    align-self: flex-start
+  }
+  
+  .categorySelect{
+    width: 420px;
+    height:51px;
+    background-color: #FFFFFF;
+    border: none;
+    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+    margin-bottom: 47px;
+    padding-left: 16px;
+  }
+  
+  .sendButton{
+    display: flex;
+    width: 237px;
+    height: 36px;
+    background-color: #A7A7A7;
+    border-radius: 60px;
+    margin-top: 42px;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .sendButton:hover{
+    filter: brightness(1);
+    box-shadow: none;
+  }
+  
+  .sendButtonText{
+    color: #FFFFFF;
+    font-family: syne;
+  }
+  
+  #buttonReadyToWork{
+    background-color:#1D6154;
+  }
+  
+  #buttonReadyToWork:hover{
+    filter: brightness(0.9);
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
+    cursor: default;
+  }
+  
+  @keyframes backgroundOpen{
+    from{opacity:0}
+    to {opacity: 0.5}
+  }
+
+
+
+
+
