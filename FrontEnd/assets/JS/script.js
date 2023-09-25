@@ -323,7 +323,7 @@ async function getWorksDatasForModal() {
           //// supprime l'element du DOM immédiatement
           figureElement.parentNode.removeChild(figureElement);
           /// Ajout de 'await'
-          await deleteElementById(item.id);
+          await deleteElementById(item.id, true);
           const idToDelete = item.id;
           await deleteElementById(idToDelete);
           const elementToRemoveFromMainPage = document.querySelector(`[data-id="${idToDelete}"]`);
@@ -347,12 +347,18 @@ async function deleteElementById(id) {
   });
   if (response.ok) {
     const elementToRemove = document.getElementById("figureForMainPage" + id);
-    const elementToRemoveFromModal = document.getElementById(
-      "figureForModal" + id
-    );
-    if (elementToRemove && elementToRemoveFromModal) {
+    if (elementToRemove) {
       elementToRemove.parentNode.removeChild(elementToRemove);
-      elementToRemoveFromModal.parentNode.removeChild(elementToRemoveFromModal);
+    }
+    if (removeFromModal) {
+      const elementToRemoveFromModal = document.getElementById(
+        "figureForModal" + id
+      );
+      if (elementToRemoveFromModal) {
+        elementToRemoveFromModal.parentNode.removeChild(
+          elementToRemoveFromModal
+        );
+      }
     }
   }
 }
