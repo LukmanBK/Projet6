@@ -20,6 +20,9 @@ function showWorks(data) {
     figureImg.src = item.imageUrl;
     const figureCaption = document.createElement("figcaption");
     figureCaption.innerText = item.title;
+    const dynamicId = item.id;
+    const concatenedId = "figureForMainPage" + dynamicId; 
+    figureElement.id = concatenedId;
 
     gallery.appendChild(figureElement);
     figureElement.appendChild(figureImg);
@@ -186,11 +189,9 @@ if (token) {
   createFilters();
 }
 
-
 // Declaration des variables pour les modales
 let modal;
 let secondModal;
-
 
 function openModal() {
   modal.style.display = "block";
@@ -234,7 +235,7 @@ function generateAndOpenSecondModal() {
   secondModal = generateSecondModal();
   document.body.appendChild(secondModal);
   openSecondModal();
-  }
+}
 
 // Fonction pour générer le contenu de la première modale
 function generateModal() {
@@ -286,7 +287,7 @@ function generateModal() {
   return modal;
 }
 
-// On recupere les données des travaux via une requete vers l'API 
+// On recupere les données des travaux via une requete vers l'API
 async function getWorksDatasForModal() {
   await fetch("http://localhost:5678/api/works")
     .then((response) => response.json())
@@ -296,31 +297,41 @@ async function getWorksDatasForModal() {
 
       // Boucle pour afficher les données dans la modale
       data.forEach((item, index) => {
-        const workElement = document.createElement("figure");
-        workElement.classList.add("figureForModal");
+        const figureElement = document.createElement("figure");
+        figureElement.classList.add("figureForModal");
         const dynamicId = item.id;
         const concatenedId = "figureForModal" + dynamicId;
-        workElement.id = concatenedId;
-        modalGallery.appendChild(workElement);
+        figureElement.id = concatenedId;
+        figureElement.dataset.id = item.id
+        modalGallery.appendChild(figureElement);
 
-        const imgWorkElement = document.createElement("img");
-        imgWorkElement.src = item.imageUrl;
-        imgWorkElement.classList.add("imgForModal");
-        workElement.appendChild(imgWorkElement);
+        const figureImg = document.createElement("img");
+        figureImg.src = item.imageUrl;
+        figureImg.classList.add("imgForModal");
+        figureElement.appendChild(figureImg);
 
         const trashContainer = document.createElement("div");
         trashContainer.classList.add("figureContainer", "trashContainer");
-        workElement.appendChild(trashContainer);
+        figureElement.appendChild(trashContainer);
 
         const trashElement = document.createElement("i");
         trashElement.classList.add("fa-solid", "fa-trash-can");
         trashContainer.appendChild(trashElement);
 
         // Appel a la fonction de suppression au click sur icone corbeille
-        trashContainer.addEventListener("click", function (event) {
-          deleteElementById(item.id);
+        trashContainer.addEventListener("click", async function (event) {
+          //// supprime l'element du DOM immédiatement
+          figureElement.parentNode.removeChild(figureElement);
+          /// Ajout de 'await'
+          await deleteElementById(item.id);
+          const idToDelete = item.id;
+          await deleteElementById(idToDelete);
+          const elementToRemoveFromMainPage = document.querySelector(`[data-id="${idToDelete}"]`);
+          if (elementToRemoveFromMainPage) {
+            elementToRemoveFromMainPage.parentNode.removeChild(elementToRemoveFromMainPage);
+          }
         });
-        
+       
       });
     });
 }
@@ -336,7 +347,9 @@ async function deleteElementById(id) {
   });
   if (response.ok) {
     const elementToRemove = document.getElementById("figureForMainPage" + id);
-    const elementToRemoveFromModal = document.getElementById("figureForModal" + id );
+    const elementToRemoveFromModal = document.getElementById(
+      "figureForModal" + id
+    );
     if (elementToRemove && elementToRemoveFromModal) {
       elementToRemove.parentNode.removeChild(elementToRemove);
       elementToRemoveFromModal.parentNode.removeChild(elementToRemoveFromModal);
@@ -353,7 +366,7 @@ function createAddPhotoForm() {
   formTitleContainer.classList.add("formTitleContainer");
   addPhotoForm.appendChild(formTitleContainer);
 
-  const modalTitle = createFormTitle("Ajout photo"); 
+  const modalTitle = createFormTitle("Ajout photo");
   formTitleContainer.appendChild(modalTitle);
 
   return addPhotoForm;
@@ -362,15 +375,15 @@ function createAddPhotoForm() {
 function createFormTitle(titleText) {
   const modalTitle = document.createElement("h3");
   modalTitle.classList.add("addPhotomodalTitle");
-  modalTitle.innerText = titleText; 
- 
- return modalTitle;
+  modalTitle.innerText = titleText;
+
+  return modalTitle;
 }
 
 
-// Fonction pour générer le contenu de la seconde modal
-function generateSecondModal() {
 
+// Fonction pour générer le contenu de la seconde modal
+ function generateSecondModal() {
   // Creation des differents éléments dans le dom
   secondModal = document.createElement("div");
   secondModal.classList.add("modal");
@@ -384,6 +397,9 @@ function generateSecondModal() {
   const modalWindow = document.createElement("div");
   modalWindow.classList.add("modal-window");
   secondModal.appendChild(modalWindow);
+
+  const addPhotoForm = createAddPhotoForm();
+  modalWindow.appendChild(addPhotoForm);
 
   const iconBar = document.createElement("div");
   iconBar.classList.add("iconBar");
@@ -403,14 +419,11 @@ function generateSecondModal() {
   closeBtn.addEventListener("click", closeSecondModal);
   iconBar.appendChild(closeBtn);
 
-  const addPhotoForm = createAddPhotoForm();
-  modalWindow.appendChild(addPhotoForm);
-
-  const formTitleContainer = document.createElement("div");
+   const formTitleContainer = document.createElement("div");
   formTitleContainer.classList.add("formTitleContainer");
   addPhotoForm.appendChild(formTitleContainer);
-  
-   const uploadPhotoContainer = document.createElement("div");
+
+  const uploadPhotoContainer = document.createElement("div");
   uploadPhotoContainer.classList.add("uploadPhotoContainer");
   addPhotoForm.appendChild(uploadPhotoContainer);
 
@@ -429,18 +442,23 @@ function generateSecondModal() {
   uploadPhotoButton.accept = ".jpg, .png";
   uploadPhotoButtonContainer.appendChild(uploadPhotoButton);
 
+  const uploadPhotodescription = document.createElement("p");
+  uploadPhotodescription.classList.add("uploadPhotodescription");
+  uploadPhotodescription.innerText = "jpg, png : 4mo max";
+  uploadPhotoContainer.appendChild(uploadPhotodescription);
+
   const uploadPhotoButtonText = document.createElement("label");
   uploadPhotoButtonText.classList.add("uploadPhotoButtonText");
   uploadPhotoButtonText.setAttribute("for", "photo");
   uploadPhotoButtonText.textContent = "+ Ajouter photo";
   uploadPhotoButtonContainer.appendChild(uploadPhotoButtonText);
 
-  // Creation d'une variable pour stocker l'image selectionnee 
-  let img;
+  let img; 
 
   // Prévisualisation de l'image avant telechargement
   uploadPhotoButton.addEventListener("input", () => {
-    const photoPreview = new FileReader();
+    
+  const photoPreview = new FileReader();
     photoPreview.readAsDataURL(uploadPhotoButton.files[0]);
 
     photoPreview.addEventListener("load", () => {
@@ -465,11 +483,6 @@ function generateSecondModal() {
     });
   });
 
-  const uploadPhotodescription = document.createElement("p");
-  uploadPhotodescription.classList.add("uploadPhotodescription");
-  uploadPhotodescription.innerText = "jpg, png : 4mo max";
-  uploadPhotoContainer.appendChild(uploadPhotodescription);
-
   const invalidFile = document.createElement("p");
   invalidFile.innerText = "";
   invalidFile.classList.add("invalidFile");
@@ -493,72 +506,78 @@ function generateSecondModal() {
   addPhotoForm.appendChild(categoryLabel);
 
   // Creation du selecteur de categorie
+  let categoryNames = "";
+let categoryId = "";
+
   const categorySelect = document.createElement("select");
   categorySelect.name = "Categorie";
   categorySelect.classList.add("categorySelect");
   addPhotoForm.appendChild(categorySelect);
 
-  let categoryNames;
-  let categoryId;
-
   const initialOption = document.createElement("option");
   initialOption.value = "";
   categorySelect.appendChild(initialOption);
 
-  // Creation dynamique des differentes categories
-  categorySelect.addEventListener("click", async () => {
-    if (categorySelect.options.length === 1) {
-      const response = await fetch("http://localhost:5678/api/categories");
-      const data = await response.json();
+async function loadCategories() {
+    try {
+    const response = await fetch("http://localhost:5678/api/categories");
+    const data = await response.json();
+  
+    data.forEach((category) => {
+      const option = document.createElement("option");
+      option.value = category.id;
+      option.text = category.name;
+      categorySelect.appendChild(option);
+    });
+  }
+   catch (error) {
+    console.error("Erreur lors du chargement des catégories:", error);
+  }
+  }
 
-      data.forEach((category) => {
-        const option = document.createElement("option");
-        option.value = category.id;
-        option.text = category.name;
-        categorySelect.appendChild(option);
-      });
-    } else {
-      const selectedOption =
-        categorySelect.options[categorySelect.selectedIndex];
-      categoryNames = selectedOption.text;
-      categoryId = selectedOption.value;
-    }
+  loadCategories();
+
+  // Creation dynamique des differentes categories
+  categorySelect.addEventListener("change", () => {
+    const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+    categoryNames = selectedOption.text;
+    categoryId = selectedOption.value;
+    updateSendButtonId();
   });
 
   const hr = document.createElement("hr");
   addPhotoForm.appendChild(hr);
 
-    // Mise a jour du bouton valider quand les donnees sont precharges
-    function updateSendButtonId() {
-      const uploadPhotoFiles = uploadPhotoButton.files;
-      const isNameInputFilled = nameInput.value.trim() !== "";
-      const isCategorySelected = categorySelect.value !== "";
-  
-      if (
-        uploadPhotoFiles.length > 0 &&
-        isNameInputFilled &&
-        isCategorySelected
-      ) {
-        sendButton.id = "buttonReadyToWork";
-      } else {
-        sendButton.id = "";
-      }
-    }
-  
-    uploadPhotoButton.addEventListener("change", updateSendButtonId);
-    nameInput.addEventListener("input", updateSendButtonId);
-    categorySelect.addEventListener("click", updateSendButtonId);
-  
-    // Creation du bouton "valider" pour soumettre le formulaire
-    const sendButton = document.createElement("button");
-    const gallery = document.querySelector(".gallery");
-    sendButton.type = "submit";
-    sendButton.classList.add("sendButton");
-    addPhotoForm.appendChild(sendButton);
+  // Fonction mettant a jour le bouton valider quand les donnees sont precharges
+  function updateSendButtonId() {
+    const uploadPhotoFiles = uploadPhotoButton.files;
+    const isNameInputFilled = nameInput.value.trim() !== "";
+    const isCategorySelected = categorySelect.value !== "";
 
-   
+    if (
+      uploadPhotoFiles.length > 0 &&
+      isNameInputFilled &&
+      isCategorySelected
+    ) {
+      sendButton.id = "buttonReadyToWork";
+    } else {
+      sendButton.id = "";
+    }
+  }
+
+  uploadPhotoButton.addEventListener("change", updateSendButtonId);
+  nameInput.addEventListener("input", updateSendButtonId);
+  categorySelect.addEventListener("change", updateSendButtonId);
+
+  // Creation du bouton "valider" pour soumettre le formulaire
+  const sendButton = document.createElement("button");
+  const gallery = document.querySelector(".gallery");
+  sendButton.type = "submit";
+  sendButton.classList.add("sendButton");
+  addPhotoForm.appendChild(sendButton);
+
   // Gestion de la soumission du formulaire d'ajout de photo
-  addPhotoForm.addEventListener("submit", async (event) => {
+  sendButton.addEventListener("click", async (event) => {
     event.preventDefault();
     if (sendButton.id === "buttonReadyToWork") {
       event.preventDefault();
@@ -610,4 +629,7 @@ function generateSecondModal() {
   modalWindow.appendChild(addPhotoForm);
 
   return secondModal;
+
 }
+
+

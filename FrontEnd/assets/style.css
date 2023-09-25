@@ -485,7 +485,6 @@ form button:hover {
 .modal-window h3{
 	font-size: 26px;
 	font-weight: 400;
-  margin-bottom: 36px;
 }
 
 .modal-gallery{
@@ -596,7 +595,9 @@ form button:hover {
     scale: 1.5;
   }
   
-  
+  .addPhotomodalTitle{
+    margin-top: 36px;
+  }
   
   .addPhotoForm{
     margin-top: 36px;
