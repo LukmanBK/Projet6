@@ -21,7 +21,7 @@ function showWorks(data) {
     const figureCaption = document.createElement("figcaption");
     figureCaption.innerText = item.title;
     const dynamicId = item.id;
-    const concatenedId = "figureForMainPage" + dynamicId; 
+    const concatenedId = "figureForMainPage" + dynamicId;
     figureElement.id = concatenedId;
 
     gallery.appendChild(figureElement);
@@ -302,7 +302,7 @@ async function getWorksDatasForModal() {
         const dynamicId = item.id;
         const concatenedId = "figureForModal" + dynamicId;
         figureElement.id = concatenedId;
-        figureElement.dataset.id = item.id
+        figureElement.dataset.id = item.id;
         modalGallery.appendChild(figureElement);
 
         const figureImg = document.createElement("img");
@@ -322,22 +322,24 @@ async function getWorksDatasForModal() {
         trashContainer.addEventListener("click", async function (event) {
           //// supprime l'element du DOM immédiatement
           figureElement.parentNode.removeChild(figureElement);
-          /// Ajout de 'await'
           await deleteElementById(item.id, true);
           const idToDelete = item.id;
           await deleteElementById(idToDelete);
-          const elementToRemoveFromMainPage = document.querySelector(`[data-id="${idToDelete}"]`);
+          const elementToRemoveFromMainPage = document.querySelector(
+            `[data-id="${idToDelete}"]`
+          );
           if (elementToRemoveFromMainPage) {
-            elementToRemoveFromMainPage.parentNode.removeChild(elementToRemoveFromMainPage);
+            elementToRemoveFromMainPage.parentNode.removeChild(
+              elementToRemoveFromMainPage
+            );
           }
         });
-       
       });
     });
 }
 
 // Fonction de suppression d'un projet en fonction de son id
-async function deleteElementById(id) {
+async function deleteElementById(id, removeFromModal) {
   const token = localStorage.getItem("token");
   const response = await fetch(`http://localhost:5678/api/works/${id}`, {
     method: "DELETE",
@@ -386,10 +388,8 @@ function createFormTitle(titleText) {
   return modalTitle;
 }
 
-
-
 // Fonction pour générer le contenu de la seconde modal
- function generateSecondModal() {
+function generateSecondModal() {
   // Creation des differents éléments dans le dom
   secondModal = document.createElement("div");
   secondModal.classList.add("modal");
@@ -425,7 +425,7 @@ function createFormTitle(titleText) {
   closeBtn.addEventListener("click", closeSecondModal);
   iconBar.appendChild(closeBtn);
 
-   const formTitleContainer = document.createElement("div");
+  const formTitleContainer = document.createElement("div");
   formTitleContainer.classList.add("formTitleContainer");
   addPhotoForm.appendChild(formTitleContainer);
 
@@ -459,12 +459,16 @@ function createFormTitle(titleText) {
   uploadPhotoButtonText.textContent = "+ Ajouter photo";
   uploadPhotoButtonContainer.appendChild(uploadPhotoButtonText);
 
-  let img; 
+  const addProjectMessage = document.createElement("p");
+  addProjectMessage.classList.add("addProjectMessage");
+  addProjectMessage.innerText = "Le projet a été ajouté avec succès !";
+  addPhotoForm.appendChild(addProjectMessage);
 
   // Prévisualisation de l'image avant telechargement
+  let img;
+
   uploadPhotoButton.addEventListener("input", () => {
-    
-  const photoPreview = new FileReader();
+    const photoPreview = new FileReader();
     photoPreview.readAsDataURL(uploadPhotoButton.files[0]);
 
     photoPreview.addEventListener("load", () => {
@@ -513,7 +517,7 @@ function createFormTitle(titleText) {
 
   // Creation du selecteur de categorie
   let categoryNames = "";
-let categoryId = "";
+  let categoryId = "";
 
   const categorySelect = document.createElement("select");
   categorySelect.name = "Categorie";
@@ -524,21 +528,20 @@ let categoryId = "";
   initialOption.value = "";
   categorySelect.appendChild(initialOption);
 
-async function loadCategories() {
+  async function loadCategories() {
     try {
-    const response = await fetch("http://localhost:5678/api/categories");
-    const data = await response.json();
-  
-    data.forEach((category) => {
-      const option = document.createElement("option");
-      option.value = category.id;
-      option.text = category.name;
-      categorySelect.appendChild(option);
-    });
-  }
-   catch (error) {
-    console.error("Erreur lors du chargement des catégories:", error);
-  }
+      const response = await fetch("http://localhost:5678/api/categories");
+      const data = await response.json();
+
+      data.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category.id;
+        option.text = category.name;
+        categorySelect.appendChild(option);
+      });
+    } catch (error) {
+      console.error("Erreur lors du chargement des catégories:", error);
+    }
   }
 
   loadCategories();
@@ -585,19 +588,17 @@ async function loadCategories() {
   // Gestion de la soumission du formulaire d'ajout de photo
   sendButton.addEventListener("click", async (event) => {
     event.preventDefault();
-    if (sendButton.id === "buttonReadyToWork") {
-      event.preventDefault();
-      try {
-        await postDatas();
-        img.remove();
-        nameInput.value = "";
-        categorySelect.selectedIndex = 0;
-        sendButton.removeAttribute("id");
-        gallery.innerHTML = "";
-        await getWorksDatas();
-      } catch (error) {
-        console.log("Erreur d'upload: ", error);
-      }
+    try {
+      await postDatas();
+      img.remove();
+      nameInput.value = "";
+      categorySelect.selectedIndex = 0;
+      sendButton.removeAttribute("id");
+      gallery.innerHTML = "";
+      await getWorksDatas();
+      addProjectMessage.style.display = "block";
+    } catch (error) {
+      console.log("Erreur d'upload: ", error);
     }
   });
 
@@ -635,7 +636,4 @@ async function loadCategories() {
   modalWindow.appendChild(addPhotoForm);
 
   return secondModal;
-
 }
-
-
