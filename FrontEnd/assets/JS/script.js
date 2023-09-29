@@ -1,5 +1,6 @@
-// On declare une variable globale contenant tout les travaux
+// On declare les variables globale contenant tous les travaux et les catégories
 let works;
+let categories;
 
 // On recupere les travaux depuis l'API
 async function getWorksDatas() {
@@ -7,7 +8,21 @@ async function getWorksDatas() {
     .then((response) => response.json())
     .then((data) => {
       works = data;
-      showWorks(data);
+      showWorks(data); // Appel à showWorks une fois les données récupérées
+    })
+  }
+
+// On recupere les catégories depuis l'API
+async function getCategoriesDatas() {
+  await fetch("http://localhost:5678/api/categories")
+    .then((response) => response.json())
+    .then((data) => {
+      categories = data;
+      const token = localStorage.getItem("token");
+      // On appelle la fonction contenant les filtres seulement si le token est inactif 
+      if (!token) {
+        showCategories(data);
+      }
     });
 }
 
@@ -30,8 +45,10 @@ function showWorks(data) {
   });
 }
 
-// On appelle la fonction qui recupere les travaux
+// On appelle les fonctions pour récupérer les travaux et les catégories
 getWorksDatas();
+getCategoriesDatas();
+
 
 //// FILTRES ////
 
@@ -39,7 +56,7 @@ getWorksDatas();
 const filtersArray = [];
 
 // On definit la fonction permettant de créer les elements de filtre et de gérer les interactions liees aux filtres
-async function createFilters() {
+function showCategories(categories) {
   const filterSection = document.querySelector(".filters");
   const filterAll = document.createElement("div");
   filterAll.classList.add("filter");
@@ -52,60 +69,36 @@ async function createFilters() {
   // On declare une variable pour suivre l'indice du filtre actuellement selectionne
   let selectedFilterIndex = 0;
 
-  // On recupere les donnees des travaux via une requete vers l'API
-  await fetch("http://localhost:5678/api/works")
-    .then((response) => response.json())
-    .then((data) => {
-      const categoriesSet = new Set();
+  // Ajout d'un event listener sur le filtre "Tous"
+  filterAll.addEventListener("click", function () {
+    gallery.innerHTML = "";
+    showWorks(works); // Afficher tous les travaux à nouveau
+  });
 
-      data.forEach((item) => {
-        const { name } = item.category;
-        categoriesSet.add(name);
-      });
+  // Boucle parcourant chaque categorie unique présente dans les données de catégories
+  categories.forEach((category) => {
+    const filter = document.createElement("div");
+    filter.classList.add("filter");
+    filter.innerText = category.name; 
+    filterSection.appendChild(filter);
+    filtersArray.push(filter);
 
-      // Ajout d'un event listener sur le filtre "Tous"
-      filterAll.addEventListener("click", function () {
-        gallery.innerHTML = "";
-        getWorksDatas();
-      });
+    // Fonction de tri par filtres
+    filter.addEventListener("click", function (event) {
+      const selectedFilter = event.target;
+      const selectedCategory = selectedFilter.innerText;
+      gallery.innerHTML = "";
+      let worksToDisplay = [];
 
-      // Creation d'un tableau contenant les catégories uniques disponibles dans les données de travaux
-      const categories = Array.from(categoriesSet);
+      worksToDisplay = works.filter(
+        (item) => item.category.name === selectedCategory
+      );
 
-      // Boucle parcourant chaque categorie unique présente dans le tableau "categories"
-      categories.forEach((category) => {
-        const filter = document.createElement("div");
-        filter.classList.add("filter");
-        filter.innerText = category;
-        filterSection.appendChild(filter);
-        filtersArray.push(filter);
-
-        // Fonction de tri par filtres
-        filter.addEventListener("click", function (event) {
-          const selectedFilter = event.target;
-          const selectedCategory = selectedFilter.innerText;
-          gallery.innerHTML = "";
-          let worksToDisplay = [];
-
-          worksToDisplay = data.filter(
-            (item) => item.category.name === selectedCategory
-          );
-
-          worksToDisplay.forEach((item) => {
-            const figureElement = document.createElement("figure");
-            const figureImg = document.createElement("img");
-            figureImg.src = item.imageUrl;
-            const figureCaption = document.createElement("figcaption");
-            figureCaption.innerText = item.title;
-            gallery.appendChild(figureElement);
-            figureElement.appendChild(figureImg);
-            figureElement.appendChild(figureCaption);
-          });
-        });
-      });
+      showWorks(worksToDisplay); // Afficher les travaux filtrés
     });
+  });
 
-  //Fonction pour mettre à jour le filtre selectionne
+  // Fonction pour mettre à jour le filtre selectionne
   function updateSelectedFilter(index) {
     for (let i = 0; i < filtersArray.length; i++) {
       if (i === index) {
@@ -184,9 +177,6 @@ if (token) {
     localStorage.removeItem("token");
     window.location.href = "index.html";
   });
-} else {
-  // Si le token n'est pas actif , on appelle la fonction pour initialiser la creation des filtres de categories dans la galerie de travaux
-  createFilters();
 }
 
 // Declaration des variables pour les modales
@@ -288,15 +278,13 @@ function generateModal() {
 }
 
 // On recupere les données des travaux via une requete vers l'API
-async function getWorksDatasForModal() {
-  await fetch("http://localhost:5678/api/works")
-    .then((response) => response.json())
-    .then((data) => {
+function getWorksDatasForModal() {
+  
       const modalGallery = document.querySelector(".modal-gallery");
       modalGallery.innerHTML = "";
 
       // Boucle pour afficher les données dans la modale
-      data.forEach((item, index) => {
+      works.forEach((item, index) => {
         const figureElement = document.createElement("figure");
         figureElement.classList.add("figureForModal");
         const dynamicId = item.id;
@@ -335,8 +323,8 @@ async function getWorksDatasForModal() {
           }
         });
       });
-    });
-}
+    };
+
 
 // Fonction de suppression d'un projet en fonction de son id
 async function deleteElementById(id, removeFromModal) {
@@ -348,22 +336,32 @@ async function deleteElementById(id, removeFromModal) {
     },
   });
   if (response.ok) {
-    const elementToRemove = document.getElementById("figureForMainPage" + id);
-    if (elementToRemove) {
-      elementToRemove.parentNode.removeChild(elementToRemove);
-    }
-    if (removeFromModal) {
-      const elementToRemoveFromModal = document.getElementById(
-        "figureForModal" + id
+    // Supprimez l'élément correspondant des données initiales (works)
+    works = works.filter((item) => item.id !== id);
+
+    // Supprimez l'élément du DOM immédiatement
+    const elementToRemoveFromModal = document.getElementById(
+      "figureForModal" + id
+    );
+    if (elementToRemoveFromModal) {
+      elementToRemoveFromModal.parentNode.removeChild(
+        elementToRemoveFromModal
       );
-      if (elementToRemoveFromModal) {
-        elementToRemoveFromModal.parentNode.removeChild(
-          elementToRemoveFromModal
+    }
+
+    if (removeFromModal) {
+      const elementToRemoveFromMainPage = document.querySelector(
+        `[data-id="${id}"]`
+      );
+      if (elementToRemoveFromMainPage) {
+        elementToRemoveFromMainPage.parentNode.removeChild(
+          elementToRemoveFromMainPage
         );
       }
     }
   }
 }
+
 
 // Fonction pour créer le formulaire d'ajout de photo dans la seconde modale
 function createAddPhotoForm() {
