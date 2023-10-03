@@ -1,4 +1,4 @@
-// On declare les variables globale contenant tous les travaux et les catégories
+// On declare les variables globales contenant tous les travaux et les catégories
 let works;
 let categories;
 
@@ -8,9 +8,9 @@ async function getWorksDatas() {
     .then((response) => response.json())
     .then((data) => {
       works = data;
-      showWorks(data); // Appel à showWorks une fois les données récupérées
-    })
-  }
+      showWorks(data);
+    });
+}
 
 // On recupere les catégories depuis l'API
 async function getCategoriesDatas() {
@@ -18,13 +18,17 @@ async function getCategoriesDatas() {
     .then((response) => response.json())
     .then((data) => {
       categories = data;
+      // On appelle la fonction contenant les filtres seulement si le token est inactif
       const token = localStorage.getItem("token");
-      // On appelle la fonction contenant les filtres seulement si le token est inactif 
       if (!token) {
-        showCategories(data);
+        showCategories(categories);
       }
     });
 }
+
+// On appelle les fonctions pour récupérer les travaux et les catégories
+getWorksDatas();
+getCategoriesDatas();
 
 // On affiche les travaux dans la galerie
 function showWorks(data) {
@@ -38,17 +42,13 @@ function showWorks(data) {
     const dynamicId = item.id;
     const concatenedId = "figureForMainPage" + dynamicId;
     figureElement.id = concatenedId;
+    figureElement.id = `figureForMainPage${dynamicId}`;
 
     gallery.appendChild(figureElement);
     figureElement.appendChild(figureImg);
     figureElement.appendChild(figureCaption);
   });
 }
-
-// On appelle les fonctions pour récupérer les travaux et les catégories
-getWorksDatas();
-getCategoriesDatas();
-
 
 //// FILTRES ////
 
@@ -58,6 +58,8 @@ const filtersArray = [];
 // On definit la fonction permettant de créer les elements de filtre et de gérer les interactions liees aux filtres
 function showCategories(categories) {
   const filterSection = document.querySelector(".filters");
+
+  //On cree dynamiquement le filtre "Tous"
   const filterAll = document.createElement("div");
   filterAll.classList.add("filter");
   filterAll.setAttribute("id", "selected");
@@ -79,7 +81,7 @@ function showCategories(categories) {
   categories.forEach((category) => {
     const filter = document.createElement("div");
     filter.classList.add("filter");
-    filter.innerText = category.name; 
+    filter.innerText = category.name;
     filterSection.appendChild(filter);
     filtersArray.push(filter);
 
@@ -279,54 +281,56 @@ function generateModal() {
 
 // On recupere les données des travaux via une requete vers l'API
 function getWorksDatasForModal() {
-  
-      const modalGallery = document.querySelector(".modal-gallery");
-      modalGallery.innerHTML = "";
+  const modalGallery = document.querySelector(".modal-gallery");
+  modalGallery.innerHTML = "";
 
-      // Boucle pour afficher les données dans la modale
-      works.forEach((item, index) => {
-        const figureElement = document.createElement("figure");
-        figureElement.classList.add("figureForModal");
-        const dynamicId = item.id;
-        const concatenedId = "figureForModal" + dynamicId;
-        figureElement.id = concatenedId;
-        figureElement.dataset.id = item.id;
-        modalGallery.appendChild(figureElement);
+  // Boucle pour afficher les données dans la modale
+  works.forEach((item, index) => {
+    const figureElement = document.createElement("figure");
+    figureElement.classList.add("figureForModal");
+    const dynamicId = item.id;
+    const concatenedId = "figureForModal" + dynamicId;
+    figureElement.id = concatenedId;
+    figureElement.dataset.id = item.id;
+    modalGallery.appendChild(figureElement);
 
-        const figureImg = document.createElement("img");
-        figureImg.src = item.imageUrl;
-        figureImg.classList.add("imgForModal");
-        figureElement.appendChild(figureImg);
+    const figureImg = document.createElement("img");
+    figureImg.src = item.imageUrl;
+    figureImg.classList.add("imgForModal");
+    figureElement.appendChild(figureImg);
 
-        const trashContainer = document.createElement("div");
-        trashContainer.classList.add("figureContainer", "trashContainer");
-        figureElement.appendChild(trashContainer);
+    const trashContainer = document.createElement("div");
+    trashContainer.classList.add("figureContainer", "trashContainer");
+    figureElement.appendChild(trashContainer);
 
-        const trashElement = document.createElement("i");
-        trashElement.classList.add("fa-solid", "fa-trash-can");
-        trashContainer.appendChild(trashElement);
+    const trashElement = document.createElement("i");
+    trashElement.classList.add("fa-solid", "fa-trash-can");
+    trashContainer.appendChild(trashElement);
 
-        // Appel a la fonction de suppression au click sur icone corbeille
-        trashContainer.addEventListener("click", async function (event) {
-          //// supprime l'element du DOM immédiatement
-          figureElement.parentNode.removeChild(figureElement);
-          await deleteElementById(item.id, true);
-          const idToDelete = item.id;
-          await deleteElementById(idToDelete);
-          const elementToRemoveFromMainPage = document.querySelector(
-            `[data-id="${idToDelete}"]`
+    // Appel a la fonction de suppression au click sur icone corbeille
+    trashContainer.addEventListener("click", async function (event) {
+      if (window.confirm("Supprimer ce travail ?")) {
+        const idToDelete = item.id;
+        //// supprime l'element du DOM immédiatement
+        figureElement.parentNode.removeChild(figureElement);
+        // Utilisez la classe spécifique pour trouver l'élément correspondant dans la galerie principale
+        const elementToRemoveFromMainPage = document.querySelector(
+          `.figureForMainPage[data-id="${idToDelete}"]`
+        );
+
+        if (elementToRemoveFromMainPage) {
+          elementToRemoveFromMainPage.parentNode.removeChild(
+            elementToRemoveFromMainPage
           );
-          if (elementToRemoveFromMainPage) {
-            elementToRemoveFromMainPage.parentNode.removeChild(
-              elementToRemoveFromMainPage
-            );
-          }
-        });
-      });
-    };
+        }
 
+        // Supprimez l'élément en appelant la fonction deleteElementById
+        await deleteElementById(idToDelete, true);
+      }
+    });
+  });
+}
 
-// Fonction de suppression d'un projet en fonction de son id
 async function deleteElementById(id, removeFromModal) {
   const token = localStorage.getItem("token");
   const response = await fetch(`http://localhost:5678/api/works/${id}`, {
@@ -339,29 +343,29 @@ async function deleteElementById(id, removeFromModal) {
     // Supprimez l'élément correspondant des données initiales (works)
     works = works.filter((item) => item.id !== id);
 
-    // Supprimez l'élément du DOM immédiatement
-    const elementToRemoveFromModal = document.getElementById(
-      "figureForModal" + id
+    // Supprimez l'élément du DOM immédiatement dans la galerie principale
+    const elementToRemoveFromMainPage = document.getElementById(
+      `figureForMainPage${id}`
     );
-    if (elementToRemoveFromModal) {
-      elementToRemoveFromModal.parentNode.removeChild(
-        elementToRemoveFromModal
+    if (elementToRemoveFromMainPage) {
+      elementToRemoveFromMainPage.parentNode.removeChild(
+        elementToRemoveFromMainPage
       );
     }
 
     if (removeFromModal) {
-      const elementToRemoveFromMainPage = document.querySelector(
-        `[data-id="${id}"]`
+      // Supprimez l'élément de la galerie modale en utilisant le même identifiant
+      const elementToRemoveFromModal = document.getElementById(
+        `figureForModal${id}`
       );
-      if (elementToRemoveFromMainPage) {
-        elementToRemoveFromMainPage.parentNode.removeChild(
-          elementToRemoveFromMainPage
+      if (elementToRemoveFromModal) {
+        elementToRemoveFromModal.parentNode.removeChild(
+          elementToRemoveFromModal
         );
       }
     }
   }
 }
-
 
 // Fonction pour créer le formulaire d'ajout de photo dans la seconde modale
 function createAddPhotoForm() {
@@ -528,10 +532,7 @@ function generateSecondModal() {
 
   async function loadCategories() {
     try {
-      const response = await fetch("http://localhost:5678/api/categories");
-      const data = await response.json();
-
-      data.forEach((category) => {
+      categories.forEach((category) => {
         const option = document.createElement("option");
         option.value = category.id;
         option.text = category.name;
@@ -594,7 +595,8 @@ function generateSecondModal() {
       sendButton.removeAttribute("id");
       gallery.innerHTML = "";
       await getWorksDatas();
-      addProjectMessage.style.display = "block";
+      closeSecondModal();
+      window.alert("Le projet a été ajouté avec succès !");
     } catch (error) {
       console.log("Erreur d'upload: ", error);
     }
